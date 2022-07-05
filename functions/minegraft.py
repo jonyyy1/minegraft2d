@@ -1,5 +1,6 @@
 from colorama import *
 from functions.matriz_juego import *
+
 # default player position PJ(x,y) // 2,11
 # 11 is the row
 # 2 is the column
@@ -10,24 +11,38 @@ stone_blocks = 0
 estado = ""
 m = 0
 n = 30
+derecha = False
+
+
+def sacar_digitos(cadena):
+    numero = '0'
+    for i in cadena:
+        if i.isdigit():
+            numero += i
+    return int(numero)
+def mirando_derecha(posicion):
+    if posicion == "right":
+        return True
+    else:
+        return False
 def draw_player():
     # 2, 11
-    global x, y
+    global x, y, derecha
     juego[y - 1][x] = 4
     juego[y][x] = 4
     juego[y + 1][x] = 4
     # draw_selection
     if estado == "left":
         juego[y][x - 1] = 6
+        derecha = mirando_derecha("left")
     else:
         juego[y][x + 1] = 6
-def build():
-    global x,y
-    copia_juego[y][x+1] = 8
-    #aqui se puede recibir por parametro el colo que quiere el usuario poner ahi gaaaaa
+        derecha = mirando_derecha("right")
+
 def draw_world():
     global x, y, wood_blocks, stone_blocks, m, n
     draw_player()
+
     for i in range(0, 20):
         for j in range(m, n):
             if juego[i][j] == 0:
@@ -58,6 +73,7 @@ def draw_world():
                 print(Back.BLACK + '   ', end="")
                 print(Style.RESET_ALL + '', end="")
         print("")
+
     print("REPORTE")
     print(" WOOD BLOCKS = ", wood_blocks)
     print(" STONE BLOCKS = ", stone_blocks)
@@ -69,41 +85,44 @@ def draw_world():
 
 def move_player(instructions):
     # instructions could be : right, left, top, down
-    instructions = instructions.split(" ")
+    instructions = instructions.split(",")
+    numero = 0
     # position
     # 2,11
     # 3,11
-    global x, y, muñeco_actual, estado, wood_blocks, stone_blocks, m, n
+    global x, y, muñeco_actual, estado, wood_blocks, stone_blocks, m, n, derecha
+
     if instructions != ['']:
         for i, v in enumerate(instructions):
-            if v == "right" :
+            numero = sacar_digitos(v)
+            if numero == 0 :
+                numero = 1
+            if "right" in v :
                 if x < 38 :
                     estado = "right"
-                    x = x + 1
-                    print(x)
+                    x = x + numero
                     if x >= n - 15 and x < 25:
-                        print("entro")
                         m += 1
                         n += 1
                 else:
                     print("invalid operation : recuerda que no puedes salir del rango del mapa")
 
-            elif v == "left" :
+            elif "left" in v :
                 if x > 1 :
                     estado = "left"
-                    x = x - 1
+                    x = x - numero
                     if x <= n - 15 and x >= 15:
                         m -= 1
                         n -= 1
                 else:
                     print("invalid operation : recuerda que no puedes salir del rango del mapa")
 
-            elif v == "up" :
+            elif "up" in v :
                 estado = "up"
-                y = y - 1
-            elif v == "down" :
+                y = y - numero
+            elif "down" in v :
                 estado = "down"
-                y = y + 1
+                y = y + numero
             elif v == "destroy":
                 #tierra, pasto, sol y agua
                 if copia_juego[y][x+1] == 8 or copia_juego[y][x+1] == 2 or copia_juego[y][x+1] == 1 or copia_juego[y][x+1] == 7 :
@@ -121,7 +140,21 @@ def move_player(instructions):
                     stone_blocks += 1
                 else :
                     print("invalid operation")
-            elif v == "build" :
-                build()
+
+            if stone_blocks > 0 and v == "build-stone":
+                if derecha:
+                    copia_juego[y][x + 1] = 5
+                else :
+                    copia_juego[y][x - 1] = 5
+                stone_blocks -= 1
+            if wood_blocks > 0 and v == "build-wood":
+                if derecha:
+                    copia_juego[y][x + 1] = 3
+                else :
+                    copia_juego[y][x - 1] = 3
+                wood_blocks -= 1
+
+
         draw_world()
+
 
