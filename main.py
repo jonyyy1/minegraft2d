@@ -10,6 +10,7 @@ print(draw_world())
 #una vez inicializado el programa se le pedira al usuario ingresar que accion quiere hace
 accion = input("¿Qué acción deseas realizar? : ")
 move_player(accion)
+
 while accion != '0':
     accion = input("¿Qué acción deseas realizar? : ")
     move_player(accion)

@@ -1,9 +1,6 @@
 from colorama import *
 from functions.matriz_juego import *
 
-# default player position PJ(x,y) // 2,11
-# 11 is the row
-# 2 is the column
 x = 2 - 1
 y = 11 - 1
 wood_blocks= 0
@@ -13,18 +10,19 @@ m = 0
 n = 30
 derecha = False
 
-
 def sacar_digitos(cadena):
     numero = '0'
     for i in cadena:
         if i.isdigit():
             numero += i
     return int(numero)
+
 def mirando_derecha(posicion):
     if posicion == "right":
         return True
     else:
         return False
+
 def draw_player():
     # 2, 11
     global x, y, derecha
@@ -98,7 +96,7 @@ def move_player(instructions):
             if numero == 0 :
                 numero = 1
             if "right" in v :
-                if x < 38 :
+                if x < 38 and numero < 40:
                     estado = "right"
                     x = x + numero
                     if x >= n - 15 and x < 25:
@@ -153,7 +151,6 @@ def move_player(instructions):
                 else :
                     copia_juego[y][x - 1] = 3
                 wood_blocks -= 1
-
 
         draw_world()
 
